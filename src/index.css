@@ -1,0 +1,594 @@
+@import "tailwindcss";
+
+/* Dark mode berbasis kelas (tombol di header), bukan cuma ikut sistem. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --surface: #ffffff;
+  --surface-2: #f0f7f3;
+  --surface-3: #e4efe9;
+  --ink: #0f172a;
+  --ink-soft: #55617a;
+  --line: #e2efe7;
+  --brand: #15803d;
+  --brand-ink: #ffffff;
+  --accent: #d97706;
+  --danger: #dc2626;
+  --brand-2: #22c55e;
+  /* Pendar brand untuk ornamen: dipakai di box-shadow (perlu alpha, bukan warna pekat). */
+  --glow: color-mix(in srgb, var(--brand) 42%, transparent);
+  /* Ujung bawah gradien tombol utama: SELALU lebih gelap dari brand, di mode gelap maupun
+     terang. Kalau gradien dibuat lebih terang (brand + brand-2), teks putih di mode terang
+     jatuh ke kontras ~2,8:1 — di bawah ambang 4,5:1. Di sini keduanya aman. */
+  --btn-b: color-mix(in srgb, var(--brand) 82%, #000);
+}
+
+.dark {
+  --surface: #0c1410;
+  --surface-2: #13211a;
+  --surface-3: #1a2c23;
+  --ink: #e9f2ec;
+  --ink-soft: #9db3a8;
+  --line: #1f3329;
+  --brand: #34d399;
+  --brand-ink: #06231a;
+  --accent: #fbbf24;
+  --danger: #f87171;
+  --brand-2: #059669;
+}
+
+@theme inline {
+  --color-surface: var(--surface);
+  --color-surface2: var(--surface-2);
+  --color-surface3: var(--surface-3);
+  --color-ink: var(--ink);
+  --color-mute: var(--ink-soft);
+  --color-line: var(--line);
+  --color-brand: var(--brand);
+  --color-brand2: var(--brand-2);
+  --color-brandink: var(--brand-ink);
+  --color-accent: var(--accent);
+  --color-danger: var(--danger);
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+}
+
+@theme {
+  /* `backwards`, bukan `both`: `both` menahan nilai akhir animasi termasuk `transform`,
+     dan transform yang menempel bikin elemen jadi containing block — semua `position: fixed`
+     di dalam kartu (overlay telepon, modal) jadi mengikat kartu, bukan viewport,
+     sehingga overlay tidak bisa di-scroll sendiri. */
+  --animate-fade-up: fade-up 0.35s ease-out backwards;
+  --animate-pop: pop 0.32s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  --animate-shimmer: shimmer 1.4s linear infinite;
+  --animate-spin-slow: spin 0.9s linear infinite;
+  /* Bar progres tak-tentu: dipakai saat panen lowongan & aksi per kartu. */
+  --animate-progress: progress 1.15s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+@keyframes pop {
+  from {
+    opacity: 0.3;
+    transform: scale(0.86);
+  }
+}
+
+/* Panel/tab masuk halus: bukan "pop" mendadak saat pindah bagian. */
+@keyframes tab-masuk {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.995);
+  }
+}
+
+.tabpane {
+  animation: tab-masuk 0.26s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+@keyframes progress {
+  from {
+    transform: translateX(-110%);
+  }
+  to {
+    transform: translateX(340%);
+  }
+}
+
+@keyframes shimmer {
+  from {
+    background-position: -160% 0;
+  }
+  to {
+    background-position: 160% 0;
+  }
+}
+
+
+html {
+  scroll-behavior: smooth;
+  /* Ruang scrollbar selalu disediakan → isi halaman tidak bergeser saat scrollbar muncul/hilang. */
+  scrollbar-gutter: stable;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: var(--surface);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  /* Pantulan/rantai scroll di HP dimatikan — halaman terasa diam, bukan goyang. */
+  overscroll-behavior-y: none;
+}
+
+/* ---- Scrollbar ramping (Chrome/Safari/Edge + Firefox) ---- */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--ink-soft) 45%, transparent) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 11px;
+  height: 11px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+  background-color: color-mix(in srgb, var(--ink-soft) 40%, transparent);
+  transition: background-color 0.2s ease;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--brand);
+}
+
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Baris tab bagian profil: satu baris, geser ke samping (swipe) — bukan tumpuk/membungkus.
+   Chip `shrink-0` supaya tidak dikecilkan, snap bikin geserannya rapi. */
+.tabrow {
+  display: flex;
+  gap: 0.375rem;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.tabrow::-webkit-scrollbar {
+  display: none;
+}
+.tabrow > * {
+  scroll-snap-align: start;
+}
+
+/* Bingkai isian: tinggi ≥44px supaya nyaman disentuh di HP. */
+.field {
+  width: 100%;
+  min-height: 44px;
+  border-radius: 0.75rem;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  padding: 0.55rem 0.7rem;
+  font-size: 0.875rem;
+  outline: none;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+}
+
+.field::placeholder {
+  color: color-mix(in srgb, var(--ink-soft) 75%, transparent);
+}
+
+/* HP: font isian ≥16px supaya iOS tidak auto-zoom saat fokus (sumber "halaman geser"). */
+@media (max-width: 640px) {
+  .field,
+  input,
+  textarea,
+  select {
+    font-size: 16px;
+  }
+}
+
+.field:focus-visible {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 22%, transparent);
+}
+
+.skeleton {
+  background: linear-gradient(90deg, var(--surface-2), var(--surface-3), var(--surface-2));
+  background-size: 200% 100%;
+  animation: var(--animate-shimmer);
+  border-radius: 0.6rem;
+}
+
+/* Aksen latar panel pratinjau: 2 lapis gradien + grid titik samar (hemat frame). */
+.preview-wrap {
+  background-color: var(--surface-2);
+  background-image: radial-gradient(90rem 30rem at 50% -10%, color-mix(in srgb, var(--brand) 14%, transparent), transparent),
+    linear-gradient(180deg, transparent, color-mix(in srgb, var(--ink) 4%, transparent)),
+    radial-gradient(circle at 1px 1px, color-mix(in srgb, var(--ink) 7%, transparent) 1px, transparent 0);
+  background-size: auto, auto, 26px 26px;
+}
+
+/* Skala kertas mengikuti lebar layar; nilai asli hanya untuk cetak.
+   Setiap langkah harus <= (lebar layar - 32px padding) / 794, kalau tidak kertas meluber lewat tepi. */
+.preview-wrap > .sheet-stack {
+  zoom: 0.33;
+}
+@media (min-width: 340px) {
+  .preview-wrap > .sheet-stack {
+    zoom: 0.36;
+  }
+}
+@media (min-width: 360px) {
+  .preview-wrap > .sheet-stack {
+    zoom: 0.4;
+  }
+}
+@media (min-width: 414px) {
+  .preview-wrap > .sheet-stack {
+    zoom: 0.44;
+  }
+}
+@media (min-width: 480px) {
+  .preview-wrap > .sheet-stack {
+    zoom: 0.55;
+  }
+}
+@media (min-width: 560px) {
+  .preview-wrap > .sheet-stack {
+    zoom: 0.65;
+  }
+}
+@media (min-width: 768px) {
+  .preview-wrap > .sheet-stack {
+    zoom: 0.72;
+  }
+}
+@media (min-width: 1280px) {
+  .preview-wrap > .sheet-stack {
+    zoom: 0.86;
+  }
+}
+
+/* Mode mini (HP): CV + surat masuk satu layar — tidak perlu scroll. Ketuk untuk buka penuh. */
+@media screen and (max-width: 1023px) {
+  .sheet-stack.mini {
+    zoom: 0.2;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    align-items: flex-start;
+  }
+
+  .sheet-stack.mini > .sheet {
+    box-shadow: 0 4px 14px rgb(15 23 42 / 0.16);
+    cursor: pointer;
+  }
+
+  /* HP sempit (≤380px): perkecil lagi supaya dua kertas tetap sebaris — tidak ada geser. */
+  @media screen and (max-width: 380px) {
+    .sheet-stack.mini {
+      zoom: 0.17;
+      flex-wrap: nowrap;
+    }
+  }
+}
+
+/* Tab HP: panel non-aktif disembunyikan hanya di layar kecil. */
+@media screen and (max-width: 1023px) {
+  .tab-off {
+    display: none;
+  }
+}
+
+/* Kertas A4: ukuran asli supaya hasil cetak persis seperti pratinjau. */
+.sheet {
+  --ink: #101827;
+  --ink-soft: #5b6472;
+  --line: #dfe3e8;
+  --accent: #15803d;
+  width: 210mm;
+  min-height: 297mm;
+  background: #fff;
+  color: var(--ink);
+  padding: 14mm;
+  box-shadow: 0 10px 34px rgb(15 23 42 / 0.18);
+  color-scheme: light;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+.sheet.inactive {
+  opacity: 0.28;
+  transform: scale(0.985);
+}
+
+/* Mode edit: kertas jadi area tulis langsung (contentEditable). */
+.dok-edit {
+  outline: none;
+  caret-color: var(--ink);
+}
+
+/* Isi hasil suntingan manual: Tailwind preflight menghapus gaya bawaan judul & daftar,
+   jadi format blok dari toolbar tampil polos tanpa aturan ini. */
+.dok-edit p {
+  margin: 0 0 0.35em;
+}
+.dok-edit h1 {
+  margin: 0.5em 0 0.25em;
+  font-size: 1.5em;
+  font-weight: 700;
+  line-height: 1.2;
+}
+.dok-edit h2 {
+  margin: 0.5em 0 0.25em;
+  font-size: 1.2em;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.dok-edit h3 {
+  margin: 0.45em 0 0.2em;
+  font-size: 1.05em;
+  font-weight: 600;
+}
+.dok-edit blockquote {
+  margin: 0.4em 0;
+  border-left: 3px solid var(--line);
+  padding-left: 0.75em;
+}
+.dok-edit ul,
+.dok-edit ol {
+  margin: 0.2em 0 0.45em;
+  padding-left: 1.3em;
+}
+.dok-edit ul {
+  list-style: disc;
+}
+.dok-edit ol {
+  list-style: decimal;
+}
+.dok-edit hr {
+  margin: 0.6em 0;
+  border: 0;
+  border-top: 1.5px solid var(--line);
+}
+.dok-edit a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+.dok-edit:focus {
+  outline: 2px solid color-mix(in oklab, var(--ink) 30%, transparent);
+  outline-offset: 8px;
+  border-radius: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+  }
+
+  /* Sisa halaman di bawah kertas ikut tercetak gelap kalau mode gelap dibiarkan —
+     kelihatan seperti dokumen terpotong. Paksa latar terang sampai ke pembungkus aplikasi. */
+  #root,
+  #root > *,
+  body > div {
+    background: #fff !important;
+    color-scheme: light !important;
+  }
+
+  .no-print,
+  .skeleton {
+    display: none !important;
+  }
+
+  .tab-off {
+    display: block !important;
+  }
+
+  .preview-wrap {
+    background: #fff !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+
+  .preview-wrap > .sheet-stack {
+    zoom: 1 !important;
+  }
+
+  .sheet {
+    /* Kunci lebar ke 210mm pas: kalau kertas lebih lebar/bergeser sedikit, printer
+       memotong tepi kanan. Di layar pun sudah 210mm, ini jaring pengaman di cetak. */
+    width: 210mm !important;
+    box-shadow: none;
+    margin: 0;
+    /* Tinggi dasar 297mm = tepat satu halaman A4. Pembulatan mm→px bikin kotak meleset
+       sepersekian melewati batas halaman → browser menyisipkan halaman kosong.
+       Di cetak, tinggi ikut isi; halaman baru hanya kalau kontennya memang panjang. */
+    min-height: 0 !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  /* CV + surat dicetak bareng: tiap dokumen mulai di halaman sendiri. */
+  .sheet + .sheet {
+    break-before: page;
+  }
+
+  /* Hanya dokumen yang sedang dipilih yang tercetak. */
+  .sheet.inactive {
+    display: none !important;
+  }
+
+  /* Konten yang mengalir ke halaman berikutnya tidak terpotong di tengah baris/heading. */
+  .sheet li,
+  .sheet h2 {
+    break-inside: avoid;
+  }
+
+  .sheet h2 {
+    break-after: avoid;
+  }
+
+  /* Garis fokus mode edit jangan ikut tercetak. */
+  .dok-edit,
+  .dok-edit:focus {
+    outline: none !important;
+  }
+}
+
+/* ================== Ornamen (riasan visual) ==================
+   Semua di bawah ini murni gradien / cincin / bayangan native: nol paket baru, nol berkas
+   gambar, nol permintaan jaringan. Arah gaya: hijau brand + aksen amber, lembut di mode
+   terang, bercahaya di mode gelap. Dua sisi tetap dapat porsi: `.orn-dock`/`orn-on` dipakai
+   dock HP & sidebar desktop, sisanya komponen bersama (kartu, tombol, tab). */
+
+body::before {
+  /* Cahaya ambient + grid titik: satu lapisan `fixed` — digambar sekali lalu tidak ikut
+     scroll (murah di laptop 3 GB / HP). z-index -1 → di bawah semua isi, jadi tidak
+     pernah menutupi tombol, dan kertas pratinjau tetap bersih (kertas punya latar sendiri).
+     Kadar cahaya dinaikkan sekali setelah pratinjau pertama: 20% ternyata tenggelam di
+     layar kontras rendah. */
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: radial-gradient(52rem 30rem at 6% -12%, color-mix(in srgb, var(--brand) 30%, transparent), transparent 64%),
+    radial-gradient(38rem 24rem at 100% -4%, color-mix(in srgb, var(--accent) 20%, transparent), transparent 60%),
+    radial-gradient(64rem 36rem at 50% 116%, color-mix(in srgb, var(--brand-2) 20%, transparent), transparent 66%),
+    radial-gradient(circle at 1px 1px, color-mix(in srgb, var(--ink) 10%, transparent) 1px, transparent 0);
+  background-size: auto, auto, auto, 22px 22px;
+}
+
+.dark body::before {
+  /* Mode gelap: cahaya ditahan sedikit, kalau tidak area atas jadi hijau susu. */
+  opacity: 0.7;
+}
+
+/* Kartu: bibir atas bergradien (bukan garis abu rata) + selubung brand tipis di kepala
+   kartu + angkat halus saat disorot. Pengangkatan hanya di perangkat berhover — di layar
+   sentuh `:hover` menempel setelah ketukan dan kartu jadi naik-turun sendiri. */
+.orn-card {
+  position: relative;
+  background-image: linear-gradient(180deg, color-mix(in srgb, var(--brand) 7%, transparent), transparent 45%);
+}
+
+.orn-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 1.25rem;
+  right: 1.25rem;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--brand) 85%, transparent), color-mix(in srgb, var(--accent) 60%, transparent), transparent);
+}
+
+@media (hover: hover) {
+  .orn-card {
+    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+  }
+
+  .orn-card:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--brand) 32%, var(--line));
+    box-shadow: 0 18px 38px -22px var(--glow);
+  }
+}
+
+/* Kotak ikon: gradien lembut + cincin + kilau dalam, bukan kotak rata. */
+.orn-tile {
+  border: 1px solid color-mix(in srgb, var(--brand) 34%, transparent);
+  background-image: linear-gradient(140deg, color-mix(in srgb, var(--brand) 40%, transparent), color-mix(in srgb, var(--brand) 8%, transparent));
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--surface) 45%, transparent), 0 8px 18px -14px var(--glow);
+  color: var(--brand);
+}
+
+/* Cincin + pendar untuk item yang sedang aktif (tab dock HP, menu sidebar desktop,
+   tab kategori). Dipisah ke kelas supaya tidak perlu menyusun color-mix panjang di
+   dalam kelas arbitrary Tailwind. */
+.orn-on {
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--brand) 26%, transparent), 0 10px 22px -16px var(--glow);
+}
+
+/* Header: garis gradien tipis di bawah, menggantikan garis abu rata. */
+.orn-header {
+  background-image: linear-gradient(180deg, color-mix(in srgb, var(--brand) 7%, transparent), transparent);
+}
+
+.orn-header::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: -1px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--brand) 50%, transparent), color-mix(in srgb, var(--accent) 38%, transparent), transparent);
+}
+
+/* Kaca melayang (dock HP + kapsul ekspor): cincin gradien + kilau dalam, tetap buram. */
+.orn-dock {
+  border-color: color-mix(in srgb, var(--brand) 26%, transparent);
+  box-shadow: 0 18px 40px -18px rgb(0 0 0 / 0.55), inset 0 1px 0 color-mix(in srgb, var(--surface) 55%, transparent), 0 0 0 1px color-mix(in srgb, var(--brand) 10%, transparent);
+}
+
+/* Tombol utama: gradien dua nada (terang→gelap) + kilau dalam + pendar brand saat disorot.
+   Ujung gelap wajib: lihat catatan `--btn-b` di atas soal kontras teks. */
+.orn-btn-primary {
+  background-image: linear-gradient(180deg, var(--brand), var(--btn-b));
+  box-shadow: inset 0 1px 0 color-mix(in srgb, #fff 25%, transparent), 0 8px 20px -14px var(--glow);
+}
+
+.orn-btn-primary:hover {
+  box-shadow: inset 0 1px 0 color-mix(in srgb, #fff 25%, transparent), 0 12px 24px -12px var(--glow);
+}
+
+@media print {
+  /* Ornamen tidak boleh muncul di kertas. */
+  body::before,
+  .orn-card::before,
+  .orn-header::after {
+    display: none !important;
+  }
+
+  .orn-card,
+  .orn-card:hover {
+    transform: none !important;
+    box-shadow: none !important;
+  }
+}

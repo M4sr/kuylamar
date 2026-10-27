@@ -1,0 +1,577 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <meta name="theme-color" content="#0c1410" />
+    <title>Masuk · Kuylamar</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" />
+    <style>
+      :root {
+        --brand: #34d399;
+        --brand-2: #059669;
+        --ink: #e9f2ec;
+        --mute: #a9c0b5;
+        --line: rgba(52, 211, 153, 0.16);
+        --garis: rgba(255, 255, 255, 0.07);
+        --surface: rgba(12, 20, 16, 0.74);
+        --petak: rgba(52, 211, 153, 0.09);
+        --danger: #f87171;
+      }
+      * { box-sizing: border-box; }
+      html, body { height: 100%; }
+      body {
+        margin: 0;
+        display: grid;
+        place-items: center;
+        padding: 26px 16px;
+        font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+        color: var(--ink);
+        background: #070e0b;
+        -webkit-font-smoothing: antialiased;
+      }
+      /* ——— Latar: aurora brand + kisi tipis, murni CSS (tanpa gambar) ——— */
+      .aurora { position: fixed; inset: 0; overflow: hidden; pointer-events: none; }
+      .aurora i {
+        position: absolute;
+        width: 48vmax;
+        height: 48vmax;
+        border-radius: 50%;
+        filter: blur(72px);
+        opacity: 0.5;
+      }
+      .aurora i:nth-child(1) { background: radial-gradient(circle, var(--brand) 0%, transparent 68%); top: -18vmax; left: -12vmax; }
+      .aurora i:nth-child(2) { background: radial-gradient(circle, var(--brand-2) 0%, transparent 68%); bottom: -20vmax; right: -14vmax; }
+      .aurora i:nth-child(3) {
+        width: 30vmax;
+        height: 30vmax;
+        bottom: 8vmax;
+        left: 42%;
+        opacity: 0.22;
+        background: radial-gradient(circle, #22d3ee 0%, transparent 70%);
+        animation: terapung 14s ease-in-out infinite alternate;
+      }
+      .aurora::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: linear-gradient(var(--garis) 1px, transparent 1px), linear-gradient(90deg, var(--garis) 1px, transparent 1px);
+        background-size: 46px 46px;
+        mask-image: radial-gradient(ellipse 90% 70% at 50% 40%, #000 20%, transparent 78%);
+        opacity: 0.5;
+      }
+      @keyframes terapung { to { transform: translate3d(-6vmax, -4vmax, 0) scale(1.12); } }
+
+      main {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        max-width: 392px;
+        padding: 26px 24px 20px;
+        border: 1px solid var(--line);
+        border-radius: 26px;
+        background: var(--surface);
+        backdrop-filter: blur(16px);
+        box-shadow: 0 30px 70px -26px rgba(0, 0, 0, 0.95), 0 0 0 1px rgba(255, 255, 255, 0.02) inset;
+        animation: naik 0.45s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+      }
+      /* Cahaya brand di tepi atas kartu */
+      main::before {
+        content: "";
+        position: absolute;
+        top: -1px;
+        left: 12%;
+        right: 12%;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(52, 211, 153, 0.75), transparent);
+      }
+      @keyframes naik { from { opacity: 0; transform: translateY(14px) scale(0.98); } }
+
+      .merek { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+      .lambang {
+        position: relative;
+        display: grid;
+        place-items: center;
+        width: 44px;
+        height: 44px;
+        border-radius: 11px;
+        background: linear-gradient(160deg, var(--brand) 0%, var(--brand-2) 100%);
+        color: #05231a;
+        box-shadow: 0 0 26px -4px rgba(52, 211, 153, 0.6);
+      }
+      .lambang::after {
+        content: "";
+        position: absolute;
+        inset: -6px;
+        border-radius: 20px;
+        border: 1px solid rgba(52, 211, 153, 0.35);
+        animation: denyut 2.6s ease-out infinite;
+      }
+      @keyframes denyut {
+        0% { opacity: 0.75; transform: scale(0.86); }
+        70%, 100% { opacity: 0; transform: scale(1.06); }
+      }
+      .merek b { display: block; font-size: 17px; font-weight: 800; letter-spacing: -0.01em; }
+      .merek em { display: block; font-size: 11.5px; font-style: normal; line-height: 1.35; color: var(--mute); }
+
+      .cap {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 9px;
+        padding: 4px 10px 4px 8px;
+        font-size: 10.5px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--brand);
+        background: var(--petak);
+        border: 1px solid var(--line);
+        border-radius: 999px;
+      }
+      .cap i { width: 5px; height: 5px; border-radius: 50%; background: var(--brand); box-shadow: 0 0 8px var(--brand); }
+      h1 { margin: 0 0 4px; font-size: 20px; font-weight: 800; letter-spacing: -0.02em; }
+      .sub { margin: 0 0 18px; font-size: 12.5px; line-height: 1.5; color: var(--mute); }
+
+      /* ——— Input: satu baris flex → ikon & tombol mata dijamin sejajar ——— */
+      .kolom {
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        height: 54px;
+        margin-bottom: 12px;
+        padding: 0 8px 0 0;
+        background: rgba(255, 255, 255, 0.035);
+        border: 1px solid var(--garis);
+        border-radius: 15px;
+        transition: border-color 0.16s, box-shadow 0.16s, background 0.16s;
+      }
+      .kolom:focus-within {
+        border-color: rgba(52, 211, 153, 0.55);
+        background: rgba(52, 211, 153, 0.05);
+        box-shadow: 0 0 0 4px rgba(52, 211, 153, 0.13);
+      }
+      .kotak {
+        display: grid;
+        place-items: center;
+        flex: 0 0 46px;
+        align-self: stretch;
+        color: var(--mute);
+        border-right: 1px solid var(--garis);
+        transition: color 0.16s, background 0.16s;
+      }
+      .kolom:focus-within .kotak { color: var(--brand); background: var(--petak); border-radius: 14px 0 0 14px; }
+      .isi { position: relative; flex: 1; min-width: 0; }
+      input[type="text"],
+      input[type="password"] {
+        width: 100%;
+        height: 52px;
+        padding: 0;
+        font: inherit;
+        font-size: 15px;
+        color: var(--ink);
+        background: none;
+        border: 0;
+        outline: none;
+      }
+      /* Autofill browser bikin latar biru: timpa */
+      input:-webkit-autofill {
+        -webkit-text-fill-color: var(--ink);
+        box-shadow: 0 0 0 40px #0d1a14 inset;
+        transition: background-color 9999s;
+      }
+      /* Label duduk TEPAT di garis border atas (takik), bukan melayang di dalam kotak. */
+      .isi label {
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        margin-left: -6px;
+        padding: 0 6px;
+        font-size: 14.5px;
+        line-height: 1.2;
+        color: var(--mute);
+        border-radius: 5px;
+        pointer-events: none;
+        transition: top 0.16s, left 0.16s, font-size 0.16s, letter-spacing 0.16s, color 0.16s, background 0.16s;
+      }
+      input:focus + label,
+      input:not(:placeholder-shown) + label {
+        top: -1px;
+        left: 7px;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        color: var(--brand);
+        background: #0f1a15;
+      }
+      button.mata {
+        display: grid;
+        place-items: center;
+        flex: 0 0 44px;
+        width: 44px;
+        height: 44px;
+        padding: 0;
+        color: var(--mute);
+        background: none;
+        border: 0;
+        border-radius: 11px;
+        cursor: pointer;
+        transition: color 0.15s, background 0.15s;
+      }
+      button.mata:hover { color: var(--ink); background: rgba(255, 255, 255, 0.07); }
+      button.mata .tutup { display: none; }
+      button.mata[aria-pressed="true"] .buka { display: none; }
+      button.mata[aria-pressed="true"] .tutup { display: block; }
+      button.mata[aria-pressed="true"] { color: var(--brand); }
+
+      .kaps {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin: -4px 0 10px;
+        font-size: 11.5px;
+        color: #fcd34d;
+      }
+      .kaps[hidden] { display: none; }
+      .kaps svg { flex: 0 0 auto; }
+
+      /* ——— Switch "Ingat 30 hari" (bukan checkbox bawaan) ——— */
+      .baris {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px 12px;
+        margin: 8px 0 18px;
+      }
+      .switch {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 4px 0;
+        font-size: 12.5px;
+        color: var(--mute);
+        cursor: pointer;
+        user-select: none;
+      }
+      .switch input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+      .jalur {
+        position: relative;
+        flex: 0 0 auto;
+        width: 40px;
+        height: 23px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.09);
+        border: 1px solid var(--garis);
+        transition: background 0.2s, border-color 0.2s;
+      }
+      .jalur::after {
+        content: "";
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 17px;
+        height: 17px;
+        border-radius: 50%;
+        background: #8ea79b;
+        transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), background 0.2s;
+      }
+      .switch input:checked + .jalur { background: rgba(52, 211, 153, 0.28); border-color: rgba(52, 211, 153, 0.5); }
+      .switch input:checked + .jalur::after { transform: translateX(17px); background: var(--brand); box-shadow: 0 0 10px -1px var(--brand); }
+      .switch input:focus-visible + .jalur { box-shadow: 0 0 0 4px rgba(52, 211, 153, 0.18); }
+      .bantu { font-size: 11.5px; color: var(--mute); }
+      a.bantu {
+        display: inline-block;
+        padding: 7px 2px;
+        margin: -7px 0;
+        text-decoration: underline dotted;
+        text-underline-offset: 3px;
+        transition: color 0.15s;
+      }
+      a.bantu:hover,
+      a.bantu:focus-visible { color: var(--brand); }
+
+      .pisah {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 13px 0;
+        font-size: 10.5px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--mute);
+      }
+      .pisah::before,
+      .pisah::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: var(--garis);
+      }
+
+      a.minta {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 48px;
+        font-size: 13.5px;
+        font-weight: 600;
+        color: var(--ink);
+        text-decoration: none;
+        background: var(--petak);
+        border: 1px solid var(--line);
+        border-radius: 15px;
+        transition: transform 0.12s, background 0.15s, border-color 0.15s;
+      }
+      a.minta svg { color: var(--brand); }
+      a.minta:hover,
+      a.minta:focus-visible { background: rgba(52, 211, 153, 0.16); border-color: rgba(52, 211, 153, 0.42); }
+      a.minta:active { transform: scale(0.985); }
+
+      button.masuk {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        width: 100%;
+        height: 50px;
+        overflow: hidden;
+        font: inherit;
+        font-size: 14.5px;
+        font-weight: 700;
+        color: #05231a;
+        background: linear-gradient(160deg, var(--brand) 0%, var(--brand-2) 100%);
+        border: 0;
+        border-radius: 15px;
+        cursor: pointer;
+        transition: transform 0.12s, filter 0.15s, box-shadow 0.2s;
+        box-shadow: 0 14px 32px -14px rgba(52, 211, 153, 0.85);
+      }
+      button.masuk::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 40%;
+        left: -60%;
+        background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+        transform: skewX(-18deg);
+      }
+      button.masuk:hover::after { animation: kilau 0.7s ease-out; }
+      @keyframes kilau { to { left: 130%; } }
+      button.masuk:hover { filter: brightness(1.07); box-shadow: 0 18px 38px -14px rgba(52, 211, 153, 1); }
+      button.masuk:active { transform: scale(0.985); }
+      button.masuk[aria-busy="true"] { cursor: progress; filter: saturate(0.75); }
+      .spin {
+        display: none;
+        width: 15px;
+        height: 15px;
+        border: 2px solid rgba(5, 35, 26, 0.35);
+        border-top-color: #05231a;
+        border-radius: 50%;
+        animation: putar 0.7s linear infinite;
+      }
+      button.masuk[aria-busy="true"] .spin { display: block; }
+      @keyframes putar { to { transform: rotate(360deg); } }
+
+      .galat {
+        display: flex;
+        align-items: flex-start;
+        gap: 9px;
+        margin-bottom: 15px;
+        padding: 10px 12px;
+        font-size: 12.5px;
+        line-height: 1.45;
+        color: #fecaca;
+        background: rgba(248, 113, 113, 0.1);
+        border: 1px solid rgba(248, 113, 113, 0.28);
+        border-radius: 13px;
+        animation: goyang 0.34s ease-out;
+      }
+      .galat svg { flex: 0 0 auto; margin-top: 1px; color: var(--danger); }
+      @keyframes goyang {
+        0%, 100% { transform: translateX(0); }
+        22% { transform: translateX(-6px); }
+        55% { transform: translateX(5px); }
+        80% { transform: translateX(-2px); }
+      }
+      footer {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        margin: 18px -24px -20px;
+        padding: 12px 24px 14px;
+        font-size: 11px;
+        line-height: 1.5;
+        color: var(--mute);
+        text-align: center;
+        border-top: 1px solid var(--garis);
+      }
+      footer b { color: rgba(233, 242, 236, 0.78); font-weight: 600; }
+      @media (prefers-reduced-motion: reduce) {
+        * { animation: none !important; transition: none !important; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="aurora" aria-hidden="true"><i></i><i></i><i></i></div>
+
+    <main>
+      <header class="merek">
+        <span class="lambang" aria-hidden="true">
+          <svg width="44" height="44" viewBox="0 0 120 120" aria-hidden="true"><path d="M60 10C77 30 86 52 86 74H34C34 52 43 30 60 10Z" fill="#fff" /><path d="M34 76 16 100 40 92Z" fill="#fff" fill-opacity=".72" /><path d="M86 76 104 100 80 92Z" fill="#fff" fill-opacity=".72" /><circle cx="60" cy="44" r="9" fill="#0f7a3d" /><path d="M50 94C56 104 60 112 60 112 60 112 64 104 70 94Z" fill="#f59e0b" /></svg>
+        </span>
+        <div>
+          <b>Kuylamar</b>
+          <em>CV + surat lamaran otomatis, siap ATS</em>
+        </div>
+      </header>
+
+      <span class="cap"><i aria-hidden="true"></i>Workspace privat</span>
+      <h1>Masuk dulu, ya</h1>
+      <p class="sub">Halaman ini dijaga gerbang. Isi akun yang diberikan pemilik.</p>
+
+      <div class="galat" id="galat" role="alert">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+          <circle cx="12" cy="12" r="9" />
+          <path d="M12 8v4.5M12 16h.01" />
+        </svg>
+        <span>{{ERROR}}</span>
+      </div>
+
+      <form method="post" action="/__masuk" id="form" novalidate>
+        <input type="hidden" name="next" value="{{NEXT}}" />
+
+        <div class="kolom">
+          <span class="kotak" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <circle cx="12" cy="8" r="3.6" />
+              <path d="M4.5 20a7.5 7.5 0 0 1 15 0" />
+            </svg>
+          </span>
+          <span class="isi">
+            <input id="user" name="user" type="text" value="{{USER}}" placeholder=" " autocomplete="username" autocapitalize="none" spellcheck="false" enterkeyhint="next" required />
+            <label for="user">Nama pengguna</label>
+          </span>
+        </div>
+
+        <div class="kolom">
+          <span class="kotak" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <rect x="4" y="10.5" width="16" height="10" rx="2.6" />
+              <path d="M8 10.5V7.8a4 4 0 0 1 8 0v2.7" />
+            </svg>
+          </span>
+          <span class="isi">
+            <input id="pass" name="pass" type="password" placeholder=" " autocomplete="current-password" enterkeyhint="go" required />
+            <label for="pass">Kata sandi</label>
+          </span>
+          <button class="mata" type="button" id="mata" aria-label="Tampilkan kata sandi" aria-pressed="false">
+            <svg class="buka" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <path d="M2 12s3.8-6.5 10-6.5S22 12 22 12s-3.8 6.5-10 6.5S2 12 2 12Z" />
+              <circle cx="12" cy="12" r="2.8" />
+            </svg>
+            <svg class="tutup" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <path d="M4 4l16 16" />
+              <path d="M9.6 6.1A10.4 10.4 0 0 1 12 5.5c6.2 0 10 6.5 10 6.5a17 17 0 0 1-3.3 4.1M6.3 8A16.9 16.9 0 0 0 2 12s3.8 6.5 10 6.5c1.2 0 2.3-.2 3.3-.6" />
+            </svg>
+          </button>
+        </div>
+
+        <p class="kaps" id="kaps" hidden>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+            <path d="M12 5l7 7H5l7-7ZM12 13v6" />
+          </svg>
+          Caps Lock menyala — sandi jadi huruf besar.
+        </p>
+
+        <div class="baris">
+          <label class="switch">
+            <input type="checkbox" name="ingat" value="1" checked />
+            <span class="jalur" aria-hidden="true"></span>
+            <span>Ingat 30 hari</span>
+          </label>
+          <a class="bantu" href="https://wa.me/6281927056766" target="_blank" rel="noopener" data-wa="lupa"
+            title="Buka WhatsApp untuk minta sandi ke pemilik">Lupa sandi? minta ke pemilik</a>
+        </div>
+
+        <button class="masuk" type="submit" id="tombol">
+          <span class="spin" aria-hidden="true"></span>
+          <span id="tulisan">Masuk</span>
+        </button>
+
+        <div class="pisah" aria-hidden="true"><span>atau</span></div>
+
+        <a class="minta" href="https://wa.me/6281927056766" target="_blank" rel="noopener" data-wa="akses">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12.04 2A9.9 9.9 0 0 0 3.5 16.9L2 22l5.25-1.47A9.9 9.9 0 1 0 12.04 2Zm0 1.8a8.1 8.1 0 1 1-4.1 15.08l-.35-.2-2.6.73.7-2.53-.2-.36A8.1 8.1 0 0 1 12.04 3.8Zm-3.2 4.1c-.2 0-.5.07-.7.35-.24.3-.7.9-.7 1.9 0 1 .72 1.97.82 2.1.1.14 1.4 2.2 3.42 3 1.68.67 2.02.54 2.39.5.36-.03 1.17-.47 1.34-.93.16-.46.16-.85.11-.93-.05-.08-.19-.13-.4-.24-.2-.1-1.17-.58-1.35-.65-.18-.07-.32-.1-.45.1-.13.2-.5.67-.62.8-.11.14-.23.15-.43.05-.2-.1-.85-.31-1.62-1-.6-.53-1-1.19-1.12-1.39-.11-.2-.01-.31.09-.41.09-.09.2-.24.31-.36.1-.12.13-.2.2-.34.06-.13.03-.25-.02-.35-.05-.1-.45-1.08-.61-1.47-.16-.39-.32-.34-.45-.34Z" />
+          </svg>
+          Minta akses ke pemilik
+        </a>
+      </form>
+
+      <footer>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <rect x="4" y="10.5" width="16" height="10" rx="2.6" />
+          <path d="M8 10.5V7.8a4 4 0 0 1 8 0v2.7" />
+        </svg>
+        Akses terbatas · <b>dijaga gerbang Kuylamar</b>
+      </footer>
+    </main>
+
+    <script>
+      // Tombol WhatsApp: nomor pemilik + template chat per keperluan.
+      // href sudah berisi wa.me tanpa teks, jadi tanpa JS pun tautan tetap jalan.
+      const PEMILIK = "6281927056766";
+      const TEMPLATE = {
+        lupa: "Halo atmin Ganteng 👋\nSaya lupa kata sandi akun Kuylamar dan mau minta sandi baru.\n\nNama: \nTerima kasih.",
+        akses: "Halo Atmin Ganteng 👋\nSaya mau minta akses masuk ke Kuylamar.\n\nNama: \nKeperluan: \nTerima kasih.",
+      };
+      document.querySelectorAll("[data-wa]").forEach((a) => {
+        const t = TEMPLATE[a.dataset.wa];
+        if (t) a.href = `https://wa.me/${PEMILIK}?text=${encodeURIComponent(t)}`;
+      });
+
+      // Pesan galat dari server; sembunyikan kalau kosong.
+      const galat = document.getElementById("galat");
+      if (!galat.textContent.trim()) galat.style.display = "none";
+      else document.getElementById("user").focus();
+
+      // Toggle sandi.
+      const pass = document.getElementById("pass");
+      const mata = document.getElementById("mata");
+      mata.addEventListener("click", () => {
+        const buka = pass.type === "password";
+        pass.type = buka ? "text" : "password";
+        mata.setAttribute("aria-pressed", String(buka));
+        mata.setAttribute("aria-label", buka ? "Sembunyikan kata sandi" : "Tampilkan kata sandi");
+        pass.focus();
+      });
+
+      // Peringatan Caps Lock biar sandi tak salah ketik.
+      const kaps = document.getElementById("kaps");
+      const cekKaps = (e) => {
+        if (typeof e.getModifierState !== "function") return;
+        kaps.hidden = !e.getModifierState("CapsLock");
+      };
+      pass.addEventListener("keydown", cekKaps);
+      pass.addEventListener("keyup", cekKaps);
+      pass.addEventListener("blur", () => { kaps.hidden = true; });
+
+      // Umpan balik saat kirim: tombol busy + spinner.
+      document.getElementById("form").addEventListener("submit", () => {
+        const t = document.getElementById("tombol");
+        t.setAttribute("aria-busy", "true");
+        document.getElementById("tulisan").textContent = "Memeriksa…";
+      });
+    </script>
+  </body>
+</html>
